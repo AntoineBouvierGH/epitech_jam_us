@@ -9,6 +9,36 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+std::vector<sf::Sprite> putChoices(std::vector<std::string> playersDir)
+{
+    int i = 0;
+    int size = playersDir.size();
+    sf::Texture texture;
+    float x = 840.0;
+    texture.loadFromFile("arrow.png");
+    std::vector<sf::Sprite> spriteVect;
+    sf::Vector2f vect(400.0, 840);
+
+    while (i < size) {
+        if (playersDir[i] == "UP") {
+            sf::Sprite sprite;
+            sprite.setTexture(texture);
+            sprite.setPosition(vect);
+            spriteVect.push_back(sprite);
+        }
+        if (playersDir[i] == "DOWN") {
+            sf::Sprite sprite;
+            sprite.setTexture(texture);
+            sprite.setPosition(vect);
+            spriteVect.push_back(sprite);
+        }
+        x += 100;
+        vect.x = x;
+        i++;
+    }
+    return (spriteVect);
+}
+
 int computeVotes(std::vector<std::string> playersDir, int currentPos)
 {
     int rez = 0;
@@ -28,23 +58,20 @@ int computeVotes(std::vector<std::string> playersDir, int currentPos)
         rez = 0;
     if (rez > 5)
         rez = 5;
-    std::cout << count << currentPos << rez << std::endl;
     return (rez);
 }
 
-int main(void)
+int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 {
     sf::Texture texture;
     texture.loadFromFile("texture.png");
     sf::Sprite sprite;
     sprite.setTexture(texture);
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
     window.setFramerateLimit(30);
-    sf::Vector2f spriteVect(0.0, 360.0);
-    sprite.setPosition(spriteVect);
+    sf::Vector2f shipPos(0.0, 360.0);
+    sprite.setPosition(shipPos);
     int x = 0;
     int y = 0;
-    int playerNumber = 2;
     int p1p = 0;
     int p2p = 0;
     std::vector<std::string> playersDir;
@@ -60,13 +87,24 @@ int main(void)
     text.setStyle(sf::Text::Bold);
     text.setFillColor(sf::Color::Red);
     std::string loadingString = "";
+
+    sf::Text voteText("",font);
+    voteText.setCharacterSize(30);
+    voteText.setStyle(sf::Text::Bold);
+    sf::Vector2f votePos(840.0, 500.0);
+    voteText.setPosition(votePos);
+    const char *voteNowSTring[2] = { "vote now!", "votez maintenant"};
     int phase = 0;
+
+    std::vector<sf::Sprite> spriteVect;
 
 
 
     while (window.isOpen())
     {
         sf::Event event;
+        spriteVect = putChoices(playersDir);
+        if (phase == 0) {
             while (window.pollEvent(event)) {
                 switch (event.type)
                 {
@@ -77,13 +115,11 @@ int main(void)
                         if (p1p == 0 && phase == 0) {
                             if (event.key.code == sf::Keyboard::A)
                             {
-                                printf("A\n");
                                 p1p = 1;
                                 playersDir.push_back("UP");
                             }
                             if (event.key.code == sf::Keyboard::Q)
                             {
-                                printf("Q\n");
                                 p1p = 1;
                                 playersDir.push_back("DOWN");
                             }
@@ -91,48 +127,54 @@ int main(void)
                         if (p2p == 0 && phase == 0) {
                             if (event.key.code == sf::Keyboard::P)
                             {
-                                printf("P\n");
                                 p2p = 1;
                                 playersDir.push_back("UP");
                             }
                             if (event.key.code == sf::Keyboard::M)
                             {
-                                printf("M\n");
                                 p2p = 1;
                                 playersDir.push_back("DOWN");
                             }
                         }
-
                         break;
                     default:
                         break;
                 }
             }
+        }
         if (phase == 0) {
+            voteText.setString(voteNowSTring[selectedLanguage]);
             if (final == loadingString) {
                 loadingString = "";
                 p2p = 0;
                 p1p = 0;
                 int nextMove = computeVotes(playersDir, currentPos);
                 currentPos = nextMove;
+                spriteVect.clear();
                 playersDir.clear();
                 phase = 1;
             }
             text.setString(loadingString);
             loadingString = loadingString + "#";
             window.clear();
+            for (int i = 0; i < spriteVect.size(); i++) {
+                window.draw(spriteVect[i]);
+            }
             window.draw(sprite);
             window.draw(text);
+            window.draw(voteText);
             window.display();
         }
-        if (phase == 1) {
-            printf("hello");
-            float y = spriteVect.y;
+        else if (phase == 1) {
+            for (int i = 0; i < playersDir.size(); i++) {
+                    std::cout << playersDir[i] << std::endl;
+                }
+            float y = shipPos.y;
             float dest = currentPos * 180;
             if (dest > y) {
                 while (y < dest) {
-                    spriteVect.y = y;
-                    sprite.setPosition(spriteVect);
+                    shipPos.y = y;
+                    sprite.setPosition(shipPos);
                     window.clear();
                     window.draw(sprite);
                     window.display();
@@ -140,16 +182,37 @@ int main(void)
                 }
             } else if (dest < y) {
                 while (y > dest) {
-                    spriteVect.y = y;
-                    sprite.setPosition(spriteVect);
+                    shipPos.y = y;
+                    sprite.setPosition(shipPos);
                     window.clear();
                     window.draw(sprite);
                     window.display();
                     y -= 10;
                 }
             }
+            for (int i = 0; i < playersDir.size(); i++) {
+                playersDir[i] = "";
+            }
+            playersDir.clear();
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                    return 0;
+                }
+            }
             phase = 0;
         }
     }
     return 0;
+}
+
+int main(void)
+{
+    int selectedLanguage = 1;
+
+    int playerNumber = 2;
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
+    gameLoop(window, selectedLanguage, playerNumber);
+
+
 }
