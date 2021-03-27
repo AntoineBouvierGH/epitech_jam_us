@@ -118,6 +118,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     sf::Vector2f votePos(840.0, 500.0);
     voteText.setPosition(votePos);
     const char *voteNowSTring[2] = { "vote now!", "votez maintenant"};
+    const char *scoreString[2] = {"Your score is: ", "votre score est: "};
     int phase = 0;
 
     std::vector<sf::Sprite> spriteVect;
@@ -133,10 +134,23 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
         return (1);
     std::vector<sf::Sprite> asteroids = getAsteroids(line);
 
+    sf::Text scoreText("", font);
+    scoreText.setCharacterSize(30);
+    scoreText.setStyle(sf::Text::Bold);
+    votePos.y = 200;
+    scoreText.setPosition(votePos);
+
+
+    int score = 0;
+    std::string strScoreText;
+
 
     while (window.isOpen())
     {
         sf::Event event;
+        strScoreText = std::to_string(score);
+        strScoreText = scoreString[selectedLanguage] + strScoreText;
+        scoreText.setString(strScoreText);
         spriteVect = putChoices(playersDir);
         while (window.pollEvent(event)) {
             switch (event.type)
@@ -169,7 +183,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                             playersDir.push_back("DOWN");
                         }
                     }
-                    if (p3p == 0 && phase == 0) {
+                    if (p3p == 0 && phase == 0 && playerNumber >= 3) {
                         if (event.key.code == sf::Keyboard::D)
                         {
                             p3p = 1;
@@ -181,7 +195,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                             playersDir.push_back("DOWN");
                         }
                     }
-                    if (p4p == 0 && phase == 0) {
+                    if (p4p == 0 && phase == 0 && playerNumber == 4) {
                         if (event.key.code == sf::Keyboard::J)
                         {
                             p4p = 1;
@@ -226,6 +240,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             window.draw(sprite);
             window.draw(text);
             window.draw(voteText);
+            window.draw(scoreText);
             window.display();
         }
         else if (phase == 1) {
@@ -245,6 +260,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         window.draw(asteroids[i]);
                     }
                     window.draw(sprite);
+                    window.draw(scoreText);
                     window.display();
                     y += 10;
                 }
@@ -261,11 +277,12 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         window.draw(asteroids[i]);
                     }
                     window.draw(sprite);
+                    window.draw(scoreText);
                     window.display();
                     y -= 10;
                 }
             }
-            while (tmpX > -400) {
+            while (tmpX > -550) {
                 window.clear();
                 for (int i = 0; i < asteroids.size(); i++) {
                     sf::Vector2f tmpPos = asteroids[i].getPosition();
@@ -274,6 +291,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     window.draw(asteroids[i]);
                 }
                 window.draw(sprite);
+                window.draw(scoreText);
                 window.display();
                 tmpX -= 10;
             }
@@ -281,15 +299,18 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             while (window.pollEvent(event)) {
                 if (event.type == sf::Event::Closed) {
                     window.close();
-                    return 0;
+                    return (0);
                 }
             }
+            if (line[currentPos] != ' ')
+                return (0);
             getline(file, line);
             if (line == "end")
                 return (1);
             asteroids.clear();
             asteroids = getAsteroids(line);
             phase = 0;
+            score += 1;
         }
     }
     return 0;
@@ -297,9 +318,9 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
 int main(void)
 {
-    int selectedLanguage = 1;
+    int selectedLanguage = 0;
 
-    int playerNumber = 4;
+    int playerNumber = 3;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
     gameLoop(window, selectedLanguage, playerNumber);
 
