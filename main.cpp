@@ -83,7 +83,7 @@ int computeVotes(std::vector<std::string> playersDir, int currentPos)
     return (rez);
 }
 
-int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
+int gameLoop(sf::RenderWindow &window, sf::Sprite backSprite, int selectedLanguage, int playerNumber)
 {
     sf::Texture texture;
     texture.loadFromFile("Textures/ship.png");
@@ -256,6 +256,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             text.setString(loadingString);
             loadingString = loadingString + "#";
             window.clear();
+            window.draw(backSprite);
             for (int i = 0; i < spriteVect.size(); i++) {
                 spriteVect[i].setTexture(textureArrow);
                 window.draw(spriteVect[i]);
@@ -280,6 +281,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     shipPos.y = y;
                     sprite.setPosition(shipPos);
                     window.clear();
+                    window.draw(backSprite);
                     tmpX -= 10;
                     for (int i = 0; i < asteroids.size(); i++) {
                         sf::Vector2f tmpPos = asteroids[i].getPosition();
@@ -298,6 +300,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     shipPos.y = y;
                     sprite.setPosition(shipPos);
                     window.clear();
+                    window.draw(backSprite);
                     tmpX -= 10;
                     for (int i = 0; i < asteroids.size(); i++) {
                         sf::Vector2f tmpPos = asteroids[i].getPosition();
@@ -314,6 +317,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             }
             while (tmpX > -550) {
                 window.clear();
+                window.draw(backSprite);
                 for (int i = 0; i < asteroids.size(); i++) {
                     sf::Vector2f tmpPos = asteroids[i].getPosition();
                     tmpPos.x = tmpX;
@@ -357,6 +361,12 @@ int main(void)
     int playerNumber = 2;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
 
+
+    sf::Texture backTexture;
+    backTexture.loadFromFile("Textures/back.jpg");
+    sf::Sprite backSprite;
+    backSprite.setTexture(backTexture);
+
     sf::Font font;
     font.loadFromFile("Fonts/arial.ttf");
 
@@ -374,6 +384,7 @@ int main(void)
     sf::Text menu3Text("", font);
     menu3Text.setCharacterSize(30);
     menu3Text.setStyle(sf::Text::Bold);
+    menu3Text.setFillColor(sf::Color::Red);
     textPos.y = 800;
     menu3Text.setPosition(textPos);
 
@@ -388,6 +399,17 @@ int main(void)
     menu3Text.setString(menu3char[selectedLanguage]);
 
 
+    /// SOUNDS
+    sf::SoundBuffer buffer1;
+    buffer1.loadFromFile("Sounds/woosh1.wav");
+    sf::Sound sound1;
+    sound1.setBuffer(buffer1);
+
+    sf::SoundBuffer buffer2;
+    buffer2.loadFromFile("Sounds/woosh2.wav");
+    sf::Sound sound2;
+    sound2.setBuffer(buffer2);
+
 
     while (window.isOpen()) {
         sf::Event event;
@@ -399,14 +421,16 @@ int main(void)
                     break;
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Space)
-                        gameLoop(window, selectedLanguage, playerNumber);
+                        gameLoop(window, backSprite,selectedLanguage, playerNumber);
                     if (event.key.code == sf::Keyboard::P) {
+                        sound1.play();
                         playerNumber++;
                         if (playerNumber == 5)
                             playerNumber = 2;
                         menu1Text.setString(menu1char[selectedLanguage] + std::to_string(playerNumber));
                     }
                     if (event.key.code == sf::Keyboard::M) {
+                        sound2.play();
                         selectedLanguage++;
                         if (selectedLanguage == 4)
                             selectedLanguage = 0;
@@ -428,6 +452,7 @@ int main(void)
             }
         }
         window.clear();
+        window.draw(backSprite);
         window.draw(menu1Text);
         window.draw(menu2Text);
         window.draw(menu3Text);
