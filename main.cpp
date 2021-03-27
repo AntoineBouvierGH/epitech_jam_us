@@ -26,7 +26,6 @@ std::vector<sf::Sprite> getAsteroids(std::string line)
             vect.y = y;
             sprite.setPosition(vect);
             asteroids.push_back(sprite);
-            std::cout << "#"<<std::endl;
         }
         y += 180;
         i++;
@@ -126,7 +125,9 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
     std::vector<sf::Sprite> spriteVect;
     sf::Texture textureArrow;
+    sf::Texture asterTexture;
     textureArrow.loadFromFile("Textures/arrow.png");
+    asterTexture.loadFromFile("Textures/aster.png");
 
 
     std::ifstream file;
@@ -260,7 +261,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                 window.draw(spriteVect[i]);
             }
             for (int i = 0; i < asteroids.size(); i++) {
-                asteroids[i].setTexture(texture);
+                asteroids[i].setTexture(asterTexture);
                 window.draw(asteroids[i]);
             }
             window.draw(sprite);
@@ -361,7 +362,7 @@ int main(void)
 
     sf::Text menu1Text("", font);
     sf::Text menu2Text("", font);
-    sf::Vector2f textPos(800.0, 400.0);
+    sf::Vector2f textPos(700.0, 400.0);
     menu1Text.setCharacterSize(30);
     menu2Text.setCharacterSize(30);
     menu1Text.setStyle(sf::Text::Bold);
@@ -421,7 +422,6 @@ int main(void)
                         menu1Text.setString(menu1char[selectedLanguage] + std::to_string(playerNumber));
                         menu3Text.setString(menu3char[selectedLanguage]);
                     }
-                    std::cout << playerNumber << "  " << selectedLanguage << std::endl;
                     break;
                 default:
                     break;
