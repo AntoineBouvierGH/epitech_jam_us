@@ -13,27 +13,25 @@ std::vector<sf::Sprite> putChoices(std::vector<std::string> playersDir)
 {
     int i = 0;
     int size = playersDir.size();
-    sf::Texture texture;
-    float x = 840.0;
-    texture.loadFromFile("arrow.png");
     std::vector<sf::Sprite> spriteVect;
-    sf::Vector2f vect(400.0, 840);
+    sf::Vector2f vect(820.0, 840);
 
     while (i < size) {
         if (playersDir[i] == "UP") {
             sf::Sprite sprite;
-            sprite.setTexture(texture);
+            sprite.setRotation(270.f);
+            sprite.setOrigin(40.f, 31.f);
             sprite.setPosition(vect);
             spriteVect.push_back(sprite);
         }
         if (playersDir[i] == "DOWN") {
             sf::Sprite sprite;
-            sprite.setTexture(texture);
+            sprite.setRotation(90.f);
+            sprite.setOrigin(40.f, 31.f);
             sprite.setPosition(vect);
             spriteVect.push_back(sprite);
         }
-        x += 100;
-        vect.x = x;
+        vect.x += 100;
         i++;
     }
     return (spriteVect);
@@ -74,9 +72,11 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     int y = 0;
     int p1p = 0;
     int p2p = 0;
+    int p3p = 0;
+    int p4p = 0;
     std::vector<std::string> playersDir;
     int currentPos = 2;
-    std::string final = "##########################################################################################";
+    std::string final = "################################################################################################";
 
 
     sf::Font font;
@@ -97,7 +97,8 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     int phase = 0;
 
     std::vector<sf::Sprite> spriteVect;
-
+    sf::Texture textureArrow;
+    textureArrow.loadFromFile("arrow.png");
 
 
     while (window.isOpen())
@@ -136,6 +137,30 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                                 playersDir.push_back("DOWN");
                             }
                         }
+                        if (p3p == 0 && phase == 0) {
+                            if (event.key.code == sf::Keyboard::D)
+                            {
+                                p3p = 1;
+                                playersDir.push_back("UP");
+                            }
+                            if (event.key.code == sf::Keyboard::C)
+                            {
+                                p3p = 1;
+                                playersDir.push_back("DOWN");
+                            }
+                        }
+                        if (p4p == 0 && phase == 0) {
+                            if (event.key.code == sf::Keyboard::J)
+                            {
+                                p4p = 1;
+                                playersDir.push_back("UP");
+                            }
+                            if (event.key.code == sf::Keyboard::N)
+                            {
+                                p4p = 1;
+                                playersDir.push_back("DOWN");
+                            }
+                        }
                         break;
                     default:
                         break;
@@ -148,6 +173,8 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                 loadingString = "";
                 p2p = 0;
                 p1p = 0;
+                p3p = 0;
+                p4p = 0;
                 int nextMove = computeVotes(playersDir, currentPos);
                 currentPos = nextMove;
                 spriteVect.clear();
@@ -158,6 +185,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             loadingString = loadingString + "#";
             window.clear();
             for (int i = 0; i < spriteVect.size(); i++) {
+                spriteVect[i].setTexture(textureArrow);
                 window.draw(spriteVect[i]);
             }
             window.draw(sprite);
@@ -210,7 +238,7 @@ int main(void)
 {
     int selectedLanguage = 1;
 
-    int playerNumber = 2;
+    int playerNumber = 4;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
     gameLoop(window, selectedLanguage, playerNumber);
 
