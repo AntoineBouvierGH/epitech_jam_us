@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -155,6 +156,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     std::string strScoreText;
 
 
+    ///musique
+    sf::SoundBuffer buffer;
+    buffer.loadFromFile("Sounds/toc.wav");
+    sf::Sound sound;
+    sound.setBuffer(buffer);
+
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -174,11 +182,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         {
                             p1p = 1;
                             playersDir.push_back("UP");
+                            sound.play();
                         }
                         if (event.key.code == sf::Keyboard::Q)
                         {
                             p1p = 1;
                             playersDir.push_back("DOWN");
+                            sound.play();
                         }
                     }
                     if (p2p == 0 && phase == 0) {
@@ -186,11 +196,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         {
                             p2p = 1;
                             playersDir.push_back("UP");
+                            sound.play();
                         }
                         if (event.key.code == sf::Keyboard::M)
                         {
                             p2p = 1;
                             playersDir.push_back("DOWN");
+                            sound.play();
                         }
                     }
                     if (p3p == 0 && phase == 0 && playerNumber >= 3) {
@@ -198,11 +210,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         {
                             p3p = 1;
                             playersDir.push_back("UP");
+                            sound.play();
                         }
                         if (event.key.code == sf::Keyboard::C)
                         {
                             p3p = 1;
                             playersDir.push_back("DOWN");
+                            sound.play();
                         }
                     }
                     if (p4p == 0 && phase == 0 && playerNumber == 4) {
@@ -210,11 +224,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                         {
                             p4p = 1;
                             playersDir.push_back("UP");
+                            sound.play();
                         }
                         if (event.key.code == sf::Keyboard::N)
                         {
                             p4p = 1;
                             playersDir.push_back("DOWN");
+                            sound.play();
                         }
                     }
                     break;
