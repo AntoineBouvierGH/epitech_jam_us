@@ -8,6 +8,30 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+
+std::vector<sf::Sprite> getAsteroids(std::string line)
+{
+    float x = 1700;
+    float y = 0;
+    int i = 0;
+    std::vector<sf::Sprite>  asteroids;
+
+    while (i < 6) {
+        if (line[i] == '#') {
+            sf::Sprite sprite;
+            sf::Vector2f vect;
+            vect.x = x;
+            vect.y = y;
+            sprite.setPosition(vect);
+            asteroids.push_back(sprite);
+            std::cout << "#"<<std::endl;
+        }
+        y += 180;
+        i++;
+    }
+    return (asteroids);
+}
 
 std::vector<sf::Sprite> putChoices(std::vector<std::string> playersDir)
 {
@@ -62,7 +86,7 @@ int computeVotes(std::vector<std::string> playersDir, int currentPos)
 int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 {
     sf::Texture texture;
-    texture.loadFromFile("texture.png");
+    texture.loadFromFile("Textures/ship.png");
     sf::Sprite sprite;
     sprite.setTexture(texture);
     window.setFramerateLimit(30);
@@ -80,7 +104,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
 
     sf::Font font;
-    font.loadFromFile("arial.ttf");
+    font.loadFromFile("Fonts/arial.ttf");
     // Create a text
     sf::Text text("",font);
     text.setCharacterSize(30);
@@ -98,73 +122,80 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
     std::vector<sf::Sprite> spriteVect;
     sf::Texture textureArrow;
-    textureArrow.loadFromFile("arrow.png");
+    textureArrow.loadFromFile("Textures/arrow.png");
+
+
+    std::ifstream file;
+    std::string line;
+    file.open("map.txt");
+    getline(file, line);
+    if (line == "end")
+        return (1);
+    std::vector<sf::Sprite> asteroids = getAsteroids(line);
 
 
     while (window.isOpen())
     {
         sf::Event event;
         spriteVect = putChoices(playersDir);
-        if (phase == 0) {
-            while (window.pollEvent(event)) {
-                switch (event.type)
-                {
-                    case sf::Event::Closed:
-                        window.close();
-                        break;
-                    case sf::Event::KeyPressed:
-                        if (p1p == 0 && phase == 0) {
-                            if (event.key.code == sf::Keyboard::A)
-                            {
-                                p1p = 1;
-                                playersDir.push_back("UP");
-                            }
-                            if (event.key.code == sf::Keyboard::Q)
-                            {
-                                p1p = 1;
-                                playersDir.push_back("DOWN");
-                            }
+        while (window.pollEvent(event)) {
+            switch (event.type)
+            {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                case sf::Event::KeyPressed:
+                    if (p1p == 0 && phase == 0) {
+                        if (event.key.code == sf::Keyboard::A)
+                        {
+                            p1p = 1;
+                            playersDir.push_back("UP");
                         }
-                        if (p2p == 0 && phase == 0) {
-                            if (event.key.code == sf::Keyboard::P)
-                            {
-                                p2p = 1;
-                                playersDir.push_back("UP");
-                            }
-                            if (event.key.code == sf::Keyboard::M)
-                            {
-                                p2p = 1;
-                                playersDir.push_back("DOWN");
-                            }
+                        if (event.key.code == sf::Keyboard::Q)
+                        {
+                            p1p = 1;
+                            playersDir.push_back("DOWN");
                         }
-                        if (p3p == 0 && phase == 0) {
-                            if (event.key.code == sf::Keyboard::D)
-                            {
-                                p3p = 1;
-                                playersDir.push_back("UP");
-                            }
-                            if (event.key.code == sf::Keyboard::C)
-                            {
-                                p3p = 1;
-                                playersDir.push_back("DOWN");
-                            }
+                    }
+                    if (p2p == 0 && phase == 0) {
+                        if (event.key.code == sf::Keyboard::P)
+                        {
+                            p2p = 1;
+                            playersDir.push_back("UP");
                         }
-                        if (p4p == 0 && phase == 0) {
-                            if (event.key.code == sf::Keyboard::J)
-                            {
-                                p4p = 1;
-                                playersDir.push_back("UP");
-                            }
-                            if (event.key.code == sf::Keyboard::N)
-                            {
-                                p4p = 1;
-                                playersDir.push_back("DOWN");
-                            }
+                        if (event.key.code == sf::Keyboard::M)
+                        {
+                            p2p = 1;
+                            playersDir.push_back("DOWN");
                         }
-                        break;
-                    default:
-                        break;
-                }
+                    }
+                    if (p3p == 0 && phase == 0) {
+                        if (event.key.code == sf::Keyboard::D)
+                        {
+                            p3p = 1;
+                            playersDir.push_back("UP");
+                        }
+                        if (event.key.code == sf::Keyboard::C)
+                        {
+                            p3p = 1;
+                            playersDir.push_back("DOWN");
+                        }
+                    }
+                    if (p4p == 0 && phase == 0) {
+                        if (event.key.code == sf::Keyboard::J)
+                        {
+                            p4p = 1;
+                            playersDir.push_back("UP");
+                        }
+                        if (event.key.code == sf::Keyboard::N)
+                        {
+                            p4p = 1;
+                            playersDir.push_back("DOWN");
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         if (phase == 0) {
@@ -188,15 +219,17 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                 spriteVect[i].setTexture(textureArrow);
                 window.draw(spriteVect[i]);
             }
+            for (int i = 0; i < asteroids.size(); i++) {
+                asteroids[i].setTexture(texture);
+                window.draw(asteroids[i]);
+            }
             window.draw(sprite);
             window.draw(text);
             window.draw(voteText);
             window.display();
         }
         else if (phase == 1) {
-            for (int i = 0; i < playersDir.size(); i++) {
-                    std::cout << playersDir[i] << std::endl;
-                }
+            float tmpX = asteroids[0].getPosition().x;
             float y = shipPos.y;
             float dest = currentPos * 180;
             if (dest > y) {
@@ -204,6 +237,13 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     shipPos.y = y;
                     sprite.setPosition(shipPos);
                     window.clear();
+                    tmpX -= 10;
+                    for (int i = 0; i < asteroids.size(); i++) {
+                        sf::Vector2f tmpPos = asteroids[i].getPosition();
+                        tmpPos.x = tmpX;
+                        asteroids[i].setPosition(tmpPos);
+                        window.draw(asteroids[i]);
+                    }
                     window.draw(sprite);
                     window.display();
                     y += 10;
@@ -213,13 +253,29 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     shipPos.y = y;
                     sprite.setPosition(shipPos);
                     window.clear();
+                    tmpX -= 10;
+                    for (int i = 0; i < asteroids.size(); i++) {
+                        sf::Vector2f tmpPos = asteroids[i].getPosition();
+                        tmpPos.x = tmpX;
+                        asteroids[i].setPosition(tmpPos);
+                        window.draw(asteroids[i]);
+                    }
                     window.draw(sprite);
                     window.display();
                     y -= 10;
                 }
             }
-            for (int i = 0; i < playersDir.size(); i++) {
-                playersDir[i] = "";
+            while (tmpX > -400) {
+                window.clear();
+                for (int i = 0; i < asteroids.size(); i++) {
+                    sf::Vector2f tmpPos = asteroids[i].getPosition();
+                    tmpPos.x = tmpX;
+                    asteroids[i].setPosition(tmpPos);
+                    window.draw(asteroids[i]);
+                }
+                window.draw(sprite);
+                window.display();
+                tmpX -= 10;
             }
             playersDir.clear();
             while (window.pollEvent(event)) {
@@ -228,6 +284,11 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     return 0;
                 }
             }
+            getline(file, line);
+            if (line == "end")
+                return (1);
+            asteroids.clear();
+            asteroids = getAsteroids(line);
             phase = 0;
         }
     }
