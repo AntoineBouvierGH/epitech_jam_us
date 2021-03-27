@@ -118,7 +118,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     sf::Vector2f votePos(840.0, 500.0);
     voteText.setPosition(votePos);
 
-    const char *voteNowSTring[4] = { "vote now!", "votez maintenant!", "vota ahora!", "wähle nun!"};
+    const char *voteNowSTring[4] = { "vote now!", "votez maintenant!", "vota ahora!", "wahle nun!"};
     const char *scoreString[4] = {"Your score is: ", "votre score est: ", "Tu puntaje es: ", "dein Ergebnis ist: "};
     const char *nbPlayerString[4] = {"players number is: ", "le nombre de joueurs est: ", "el numero de jugador es: ", "spielernummer ist: "};
     int phase = 0;
@@ -332,11 +332,89 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
 int main(void)
 {
-    int selectedLanguage = 2;
+    /////////  MENU //////////
 
-    int playerNumber = 3;
+    std::string lang = "English";
+    int selectedLanguage = 0;
+
+    int playerNumber = 2;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
-    gameLoop(window, selectedLanguage, playerNumber);
+
+    sf::Font font;
+    font.loadFromFile("Fonts/arial.ttf");
+
+    sf::Text menu1Text("", font);
+    sf::Text menu2Text("", font);
+    sf::Vector2f textPos(800.0, 400.0);
+    menu1Text.setCharacterSize(30);
+    menu2Text.setCharacterSize(30);
+    menu1Text.setStyle(sf::Text::Bold);
+    menu2Text.setStyle(sf::Text::Bold);
+    menu1Text.setPosition(textPos);
+    textPos.y = 600;
+    menu2Text.setPosition(textPos);
+
+    sf::Text menu3Text("", font);
+    menu3Text.setCharacterSize(30);
+    menu3Text.setStyle(sf::Text::Bold);
+    textPos.y = 800;
+    menu3Text.setPosition(textPos);
 
 
+
+    const char *menu1char[4] = {"Press 'P' to choose player number: ", "Appuyez sur 'P' pour changer le nombre de joueurs: ","Presione 'P' para elegir el numero de jugador: ", "Drucken Sie 'P', um die Spielernummer auszuwahlen: "};
+    const char *menu2char[4] = {"Press 'M' to change language: ", "Appuyez sur 'M' pour changer la langue: ","Presione 'M' para cambiar el idioma: ", "Drucken Sie 'M', um die Sprache zu andern: "};
+    const char *menu3char[4] = {"Press SPACE to launch", "Appuyez sur ESPACE pour lancer","Presione ESPACIO para iniciar", "Drucken Sie die LEERTASTE, um zu starten"};
+
+    menu1Text.setString(menu1char[selectedLanguage] + std::to_string(playerNumber));
+    menu2Text.setString(menu2char[selectedLanguage] + lang);
+    menu3Text.setString(menu3char[selectedLanguage]);
+
+
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            switch (event.type)
+            {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Space)
+                        gameLoop(window, selectedLanguage, playerNumber);
+                    if (event.key.code == sf::Keyboard::P) {
+                        playerNumber++;
+                        if (playerNumber == 5)
+                            playerNumber = 2;
+                        menu1Text.setString(menu1char[selectedLanguage] + std::to_string(playerNumber));
+                    }
+                    if (event.key.code == sf::Keyboard::M) {
+                        selectedLanguage++;
+                        if (selectedLanguage == 4)
+                            selectedLanguage = 0;
+                        if (selectedLanguage == 0)
+                            lang = "English";
+                        if (selectedLanguage == 1)
+                            lang = "French";
+                        if (selectedLanguage == 2)
+                            lang = "Spanish";
+                        if (selectedLanguage == 3)
+                            lang = "Deutsch";
+                        menu2Text.setString(menu2char[selectedLanguage] + lang);
+                        menu1Text.setString(menu1char[selectedLanguage] + std::to_string(playerNumber));
+                        menu3Text.setString(menu3char[selectedLanguage]);
+                    }
+                    std::cout << playerNumber << "  " << selectedLanguage << std::endl;
+                    break;
+                default:
+                    break;
+            }
+        }
+        window.clear();
+        window.draw(menu1Text);
+        window.draw(menu2Text);
+        window.draw(menu3Text);
+        window.display();
+    }
 }
