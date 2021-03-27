@@ -117,8 +117,10 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     voteText.setStyle(sf::Text::Bold);
     sf::Vector2f votePos(840.0, 500.0);
     voteText.setPosition(votePos);
-    const char *voteNowSTring[2] = { "vote now!", "votez maintenant"};
-    const char *scoreString[2] = {"Your score is: ", "votre score est: "};
+
+    const char *voteNowSTring[4] = { "vote now!", "votez maintenant!", "vota ahora!", "wähle nun!"};
+    const char *scoreString[4] = {"Your score is: ", "votre score est: ", "Tu puntaje es: ", "dein Ergebnis ist: "};
+    const char *nbPlayerString[4] = {"players number is: ", "le nombre de joueurs est: ", "el numero de jugador es: ", "spielernummer ist: "};
     int phase = 0;
 
     std::vector<sf::Sprite> spriteVect;
@@ -139,6 +141,14 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
     scoreText.setStyle(sf::Text::Bold);
     votePos.y = 200;
     scoreText.setPosition(votePos);
+
+    sf::Text nbPlayerText("", font);
+    nbPlayerText.setCharacterSize(30);
+    nbPlayerText.setStyle(sf::Text::Bold);
+    votePos.y = 10;
+    nbPlayerText.setPosition(votePos);
+    std::string nbPlayerStr = nbPlayerString[selectedLanguage] + std::to_string(playerNumber);
+    nbPlayerText.setString(nbPlayerStr);
 
 
     int score = 0;
@@ -241,6 +251,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
             window.draw(text);
             window.draw(voteText);
             window.draw(scoreText);
+            window.draw(nbPlayerText);
             window.display();
         }
         else if (phase == 1) {
@@ -261,6 +272,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     }
                     window.draw(sprite);
                     window.draw(scoreText);
+                    window.draw(nbPlayerText);
                     window.display();
                     y += 10;
                 }
@@ -278,6 +290,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                     }
                     window.draw(sprite);
                     window.draw(scoreText);
+                    window.draw(nbPlayerText);
                     window.display();
                     y -= 10;
                 }
@@ -292,6 +305,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
                 }
                 window.draw(sprite);
                 window.draw(scoreText);
+                window.draw(nbPlayerText);
                 window.display();
                 tmpX -= 10;
             }
@@ -318,7 +332,7 @@ int gameLoop(sf::RenderWindow &window, int selectedLanguage, int playerNumber)
 
 int main(void)
 {
-    int selectedLanguage = 0;
+    int selectedLanguage = 2;
 
     int playerNumber = 3;
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Coop Entreprise");
